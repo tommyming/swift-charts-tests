@@ -191,6 +191,8 @@ struct ContentView: View {
                             y: .value("End Price", data.endPrice)
                         )
                         .foregroundStyle(by: .value("Stock Name", data.name))
+                        .symbol(.square)
+                        .symbolSize(100)
                     }
                 }
                 .frame(height: 300)
