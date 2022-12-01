@@ -58,6 +58,8 @@ struct StockEntity: Identifiable {
 }
 
 struct ContentView: View {
+    @State private var symbol: BasicChartSymbolShape = .square
+    
     // MARK: - BarMark Data
     var data: [ToyType] = [
         // The new instance creation method, in delcarative syntax
@@ -191,12 +193,26 @@ struct ContentView: View {
                             y: .value("End Price", data.endPrice)
                         )
                         .foregroundStyle(by: .value("Stock Name", data.name))
-                        .symbol(.square)
+                        .symbol(symbol)
                         .symbolSize(100)
                     }
                 }
                 .frame(height: 300)
                 .padding()
+                
+                // Trigger Symbol Menu
+                Menu {
+                    MenuSymbolButton(symbol: $symbol, symbolName: "Square", symbolImageName: "square")
+                    MenuSymbolButton(symbol: $symbol, symbolName: "Circle", symbolImageName: "circle")
+                    MenuSymbolButton(symbol: $symbol, symbolName: "Triangle", symbolImageName: "triangle")
+                    MenuSymbolButton(symbol: $symbol, symbolName: "Diamond", symbolImageName: "diamond")
+                    MenuSymbolButton(symbol: $symbol, symbolName: "Pentagon", symbolImageName: "pentagon")
+                    MenuSymbolButton(symbol: $symbol, symbolName: "Plus", symbolImageName: "plus")
+                    MenuSymbolButton(symbol: $symbol, symbolName: "Cross", symbolImageName: "cross")
+                    MenuSymbolButton(symbol: $symbol, symbolName: "Asterisk", symbolImageName: "asterisk")
+                } label: {
+                    Text("Choose Label")
+                }
             }
             .padding()
         }
@@ -209,7 +225,29 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-// MARK: DataModels for the Charts
-extension ContentView {
+struct MenuSymbolButton: View {
+    @Binding var symbol: BasicChartSymbolShape
     
+    var symbolName: String
+    var symbolImageName: String
+    
+    var body: some View {
+        Button {
+            symbol = {
+                switch symbolImageName {
+                case "square": return .square
+                case "circle": return .circle
+                case "triangle": return .triangle
+                case "diamond": return .diamond
+                case "pentagon": return .pentagon
+                case "plus": return .plus
+                case "cross": return .cross
+                case "asterisk": return .asterisk
+                default: return .square
+                }
+            }()
+        } label: {
+            Label(symbolName, systemImage: symbolImageName)
+        }
+    }
 }
