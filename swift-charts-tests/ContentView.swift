@@ -213,6 +213,10 @@ struct ContentView: View {
                 } label: {
                     Text("Choose Label")
                 }
+                .padding(10)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
             }
             .padding()
         }
