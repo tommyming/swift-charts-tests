@@ -70,8 +70,29 @@ struct Coord: Identifiable {
     let y: Double
 }
 
+struct EventEntity: Identifiable {
+    var id = UUID().uuidString
+    let title: String
+    let startDate: Date
+    let endDate: Date
+    
+    init(year: Int, startMonth: Int, startDay: Int, numMonths: Int, title: String) {
+        self.title = title
+        let calendar = Calendar.autoupdatingCurrent
+        self.startDate = calendar.date(from: DateComponents(year: year, month: startMonth, day: startDay))!
+        self.endDate = calendar.date(byAdding: .month, value: numMonths, to: startDate)!
+    }
+}
+
 struct ContentView: View {
     @State private var symbol: BasicChartSymbolShape = .square
+    
+    var eventData: [EventEntity] = [
+        .init(year: 2022, startMonth: 1, startDay: 1, numMonths: 2, title: "Development"),
+        .init(year: 2022, startMonth: 3, startDay: 1, numMonths: 2, title: "Testing"),
+        .init(year: 2022, startMonth: 5, startDay: 1, numMonths: 2, title: "Debug"),
+        .init(year: 2022, startMonth: 7, startDay: 1, numMonths: 0, title: "Release")
+    ]
     
     var matrixData: [MatrixEntity] = [
         .init(positive: "+", negative: "+", num: Double.random(in: 1 ... 200)),
@@ -179,6 +200,7 @@ struct ContentView: View {
     var body: some View {
         ScrollView {
             VStack {
+                
                 // BarMark Implementation
                 Chart {
                     ForEach(data) { shape in
@@ -291,6 +313,24 @@ struct ContentView: View {
                 }
                 .frame(height: 300)
                 .padding()
+                
+                // RuleMark Implementation
+                Chart {
+                    ForEach(eventData) { datum in
+                        RuleMark(
+                            xStart: .value("Start Date", datum.startDate),
+                            xEnd: .value("End Date", datum.endDate),
+                            y: .value("Event", datum.title)
+                        )
+                    }
+                }
+                .frame(height: 300)
+                .padding()
+                
+                // RuleMark + BarMark Implementation
+                Chart {
+                    
+                }
             }
             .padding()
         }
