@@ -84,6 +84,12 @@ struct EventEntity: Identifiable {
     }
 }
 
+struct DepartmentEntity: Identifiable {
+    var id = UUID().uuidString
+    let department: String
+    let profit: Double
+}
+
 struct ContentView: View {
     @State private var symbol: BasicChartSymbolShape = .square
     
@@ -105,6 +111,12 @@ struct ContentView: View {
         .init(x: 5, y: 5),
         .init(x: 2.5, y: 2.5),
         .init(x: 3, y: 3)
+    ]
+    
+    var departmentData: [DepartmentEntity] = [
+        .init(department: "Production", profit: 15000),
+        .init(department: "Marketing", profit: 8000),
+        .init(department: "Finance", profit: 10000)
     ]
     
     // MARK: - BarMark Data
@@ -329,8 +341,20 @@ struct ContentView: View {
                 
                 // RuleMark + BarMark Implementation
                 Chart {
+                    ForEach(departmentData) { datum in
+                        BarMark(
+                            x: .value("Department", datum.department),
+                            y: .value("Profit", datum.profit)
+                        )
+                    }
                     
+                    RuleMark(
+                        y: .value("BreakEven Thresold", 9000)
+                    )
+                    .foregroundStyle(.red)
                 }
+                .frame(height: 300)
+                .padding()
             }
             .padding()
         }
