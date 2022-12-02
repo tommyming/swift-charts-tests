@@ -57,8 +57,34 @@ struct StockEntity: Identifiable {
     }
 }
 
+struct MatrixEntity: Identifiable {
+    var id = UUID().uuidString
+    let positive: String
+    let negative: String
+    let num: Double
+}
+
+struct Coord: Identifiable {
+    var id = UUID().uuidString
+    let x: Double
+    let y: Double
+}
+
 struct ContentView: View {
     @State private var symbol: BasicChartSymbolShape = .square
+    
+    var matrixData: [MatrixEntity] = [
+        .init(positive: "+", negative: "+", num: Double.random(in: 1 ... 200)),
+        .init(positive: "+", negative: "-", num: Double.random(in: 1 ... 200)),
+        .init(positive: "-", negative: "-", num: Double.random(in: 1 ... 200)),
+        .init(positive: "-", negative: "+", num: Double.random(in: 1 ... 200))
+    ]
+    
+    var coordData: [Coord] = [
+        .init(x: 5, y: 5),
+        .init(x: 2.5, y: 2.5),
+        .init(x: 3, y: 3)
+    ]
     
     // MARK: - BarMark Data
     var data: [ToyType] = [
@@ -211,12 +237,60 @@ struct ContentView: View {
                     MenuSymbolButton(symbol: $symbol, symbolName: "Cross", symbolImageName: "cross")
                     MenuSymbolButton(symbol: $symbol, symbolName: "Asterisk", symbolImageName: "asterisk")
                 } label: {
-                    Text("Choose Label")
+                    Text("Choose Symbol")
                 }
                 .padding(10)
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(10)
+                
+                // PointMark Implementation
+                Chart {
+                    ForEach(lineStockData) { datum in
+                        PointMark(
+                            x: .value("Date", datum.date),
+                            y: .value("End Price", datum.endPrice)
+                        )
+                        .foregroundStyle(by: .value("Stock Name", datum.name))
+                        .symbol(symbol)
+                        .symbolSize(100)
+                    }
+                }
+                .frame(height: 300)
+                .padding()
+                
+                // RectangleMark Implementation
+                Chart {
+                    ForEach(matrixData) { datum in
+                        RectangleMark(
+                            x: .value("Positive", datum.positive),
+                            y: .value("Negative", datum.negative)
+                        )
+                        .foregroundStyle(by: .value("Number", datum.num))
+                    }
+                }
+                .frame(height: 300)
+                .padding()
+                
+                // PointMark + RectangleMark Implementation
+                Chart {
+                    ForEach(coordData) { datum in
+                        RectangleMark(
+                            xStart: .value("Rect Start Width", datum.x - 0.25),
+                            xEnd: .value("Rect End Width", datum.x + 0.25),
+                            yStart: .value("Rect Start Height", datum.y - 0.25),
+                            yEnd: .value("Rect End Height", datum.y + 0.25)
+                        )
+                        .opacity(0.2)
+                        
+                        PointMark(
+                            x: .value("X", datum.x),
+                            y: .value("Y", datum.y)
+                        )
+                    }
+                }
+                .frame(height: 300)
+                .padding()
             }
             .padding()
         }
